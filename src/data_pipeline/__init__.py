@@ -13,11 +13,13 @@ per-experiment folder layout. Typical use from a ``data_gen/<exp>/`` script::
 
 from data_pipeline.config import ExperimentConfig, load_experiment_config
 from data_pipeline.runner import run_datagen
+from data_pipeline.render import run_render
 from data_pipeline import paths
 
 __all__ = [
     "ExperimentConfig",
     "load_experiment_config",
     "run_datagen",
+    "run_render",
     "paths",
 ]

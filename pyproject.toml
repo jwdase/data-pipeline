@@ -3,10 +3,11 @@
   version = "0.1.0"
   requires-python = ">=3.11,<3.14"          # must overlap scene-physics's range
   dependencies = [
+      "imgui-bundle>=1.92.801",
       "scene-physics",
       # data_gen's own libs (numpy/scipy/pyvista/usd-core/jax/warp/newton) arrive
       # transitively from scene-physics — don't re-list them. But sources below ARE required.
-  ]
+]
 
   [build-system]
   requires = ["hatchling"]

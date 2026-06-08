@@ -8,6 +8,7 @@ wheels/
 
 # Virtual environments
 .venv
+.claude
 
 # Generated datasets — build artifacts; regenerate via data_gen/<exp>/generate.py.
 # (data/README.md and any other tracked top-level files under data/ are kept.)

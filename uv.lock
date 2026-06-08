@@ -515,11 +515,15 @@ name = "datagen-pipeline"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "imgui-bundle" },
     { name = "scene-physics" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "scene-physics", editable = "../Scene-Physics" }]
+requires-dist = [
+    { name = "imgui-bundle", specifier = ">=1.92.801" },
+    { name = "scene-physics", editable = "../Scene-Physics" },
+]
 
 [[package]]
 name = "debugpy"
