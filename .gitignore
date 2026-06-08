@@ -1,0 +1,14 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Generated datasets — build artifacts; regenerate via data_gen/<exp>/generate.py.
+# (data/README.md and any other tracked top-level files under data/ are kept.)
+/data/*/

@@ -1,0 +1,33 @@
+  [project]
+  name = "datagen-pipeline"
+  version = "0.1.0"
+  requires-python = ">=3.11,<3.14"          # must overlap scene-physics's range
+  dependencies = [
+      "scene-physics",
+      # data_gen's own libs (numpy/scipy/pyvista/usd-core/jax/warp/newton) arrive
+      # transitively from scene-physics — don't re-list them. But sources below ARE required.
+  ]
+
+  [build-system]
+  requires = ["hatchling"]
+  build-backend = "hatchling.build"
+
+  [tool.hatch.build.targets.wheel]
+  packages = ["src/data_pipeline"]
+
+  [tool.uv.sources]
+  # Pick ONE of the two scene-physics lines (see "path vs git" below):
+  scene-physics = { path = "../Scene-Physics", editable = true }
+  # scene-physics = { git = "ssh://git@github.com/<you>/Scene-Physics.git", rev = "<sha>" }
+
+  # REQUIRED re-declaration — sources are not inherited from scene-physics:
+  newton    = { path = "../Scene-Physics/src/newton", editable = true }
+  warp-lang = { index = "nvidia" }
+
+  [[tool.uv.index]]
+  url = "https://pypi.org/simple"
+
+  [[tool.uv.index]]
+  name = "nvidia"
+  url = "https://pypi.nvidia.com/"
+  explicit = true
