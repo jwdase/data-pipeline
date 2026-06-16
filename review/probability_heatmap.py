@@ -60,13 +60,15 @@ def gen_heatmap(scene, exp):
 
 if __name__ == "__main__":
 
-    length = lambda x : len(str(x))
+    # length = lambda x : len(str(x))
 
-    scenes = [
-        "scene" + "0" * (3 - length(x)) + str(x)
-        for x in range(1, 101)
-    ]
+    # scenes = [
+    #     "scene" + "0" * (3 - length(x)) + str(x)
+    #     for x in range(1, 101)
+    # ]
+
+    scenes = ["scene001"]
 
     for scene in scenes:
-        gen_heatmap(scene)
+        gen_heatmap(scene, "exp01")
 

@@ -26,6 +26,7 @@ from __future__ import annotations
 from dataclasses import replace
 from pathlib import Path
 
+from pxr import Usd, UsdPhysics
 from scene_physics.visualization.render_pipeline import DEFAULT_HDRI, render_scene
 
 from data_pipeline.config import load_experiment_config
@@ -34,10 +35,22 @@ from data_pipeline.paths import data_dir
 __all__ = ["scene_dirs", "run_render"]
 
 
+def _has_rigid_bodies(usd_path: Path) -> bool:
+    """True if the USD authors at least one dynamic body. A raw Blender export
+    mislabeled as ``*_physics.usdc`` imports as plain meshes with no UsdPhysics
+    schemas: render_scene still loads the geometry, but the segmentation ID pass
+    matches nothing (its objects sit a prim deeper than ``truth.json``'s names) and
+    the mask comes up blank. The name-based glob can't tell the two apart — only the
+    schemas can — so re-author with ``eval/exp05/to_physics.py``."""
+    stage = Usd.Stage.Open(str(usd_path))
+    return any(p.HasAPI(UsdPhysics.RigidBodyAPI) for p in stage.Traverse())
+
+
 def scene_dirs(exp: str, scenes: list[str] | None = None) -> list[Path]:
     """Scene dirs to render for ``exp``: the named ones, else every
-    ``sceneNNN/`` in ``data/<exp>/``. A dir is skipped (with a warning) unless
-    it holds a ``data/*_physics.usdc`` — the USD ``render_scene`` imports."""
+    ``sceneNNN/`` in ``data/<exp>/``. A dir is skipped (with a warning) unless it
+    holds a ``data/*_physics.usdc`` that actually carries UsdPhysics rigid bodies —
+    the USD ``render_scene`` imports; a physics-less one renders a blank mask."""
     root = data_dir(exp)
     candidates = (
         [root / n for n in scenes]
@@ -47,8 +60,15 @@ def scene_dirs(exp: str, scenes: list[str] | None = None) -> list[Path]:
 
     dirs: list[Path] = []
     for d in candidates:
-        if next(d.glob("data/*_physics.usdc"), None) is None:
+        usd = next(d.glob("data/*_physics.usdc"), None)
+        if usd is None:
             print(f"[run_render] skip {d.name}: no data/*_physics.usdc")
+            continue
+        if not _has_rigid_bodies(usd):
+            print(
+                f"[run_render] skip {d.name}: {usd.name} has no UsdPhysics rigid bodies "
+                f"(raw export mislabeled as _physics.usdc) -- re-author with to_physics.py"
+            )
             continue
         dirs.append(d)
     return dirs

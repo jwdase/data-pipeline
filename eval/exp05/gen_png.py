@@ -1,19 +1,23 @@
-"""Render every exp01 scene to a PNG + segmentation mask from camera ``p01_f03``.
+"""Render every exp03 scene to a PNG + segmentation mask from camera ``p01_f03``.
 
-A thin CLI over :func:`data_pipeline.run_render`. The viewpoint is loaded from
-``config/exp01.json`` (camera ``p01_f03``, eye-level front, 34 deg FOV) — the
-same camera the dataset was generated and occlusion-gated against — so each
-scene is rendered from the exact perspective the experiment is defined by.
+A thin CLI over :func:`data_pipeline.run_render`. exp03 has two conditions —
+``coupled`` and ``control`` — each its own dataset under
+``data/exp03/<condition>/``. The viewpoint is loaded from
+``config/exp03/<condition>.json``, which embeds exp01's camera ``p01_f03``
+(eye-level front, 34 deg FOV) — exp03 shares exp01's camera, so scenes render
+from the same perspective as exp01/exp02.
 
 Blender is required (on PATH, or point ``$BLENDER`` at the binary). Run from
 anywhere in the repo — scenes and the camera resolve by experiment id, not cwd::
 
-    uv run python eval/exp01/gen_png.py                 # all scenes in data/exp01/
-    uv run python eval/exp01/gen_png.py --scenes scene006 scene007   # a subset
-    uv run python eval/exp01/gen_png.py --device CPU --samples 64     # quick check
+    uv run python eval/exp03/gen_png.py                          # all coupled scenes
+    uv run python eval/exp03/gen_png.py --condition control      # all control scenes
+    uv run python eval/exp03/gen_png.py --scenes scene006 scene007   # a subset
+    uv run python eval/exp03/gen_png.py --device CPU --samples 64     # quick check
 
-Outputs land in ``data/exp01/sceneNNN/results/`` (render.png, segmentation.png,
-segmentation_overlay.png, ...) unless ``--out-root`` redirects them.
+Outputs land in ``data/exp03/<condition>/sceneNNN/results/`` (render.png,
+segmentation.png, segmentation_overlay.png, ...) unless ``--out-root`` redirects
+them.
 """
 
 from __future__ import annotations
@@ -22,16 +26,18 @@ import argparse
 
 from data_pipeline import run_render
 
-EXP = "exp01"
-
 
 def main() -> None:
     ap = argparse.ArgumentParser(
-        description="Render exp01 scenes to PNG + segmentation from camera p01_f03."
+        description="Render exp03 scenes to PNG + segmentation from camera p01_f03 (exp01's camera)."
+    )
+    ap.add_argument(
+        "--condition", default="coupled", choices=["coupled", "control"],
+        help="Which exp03 condition to render (default: coupled).",
     )
     ap.add_argument(
         "--scenes", nargs="*", default=None,
-        help="Scene names to render, e.g. scene006 (default: all scenes in data/exp01/).",
+        help="Scene names to render, e.g. scene006 (default: all scenes in the condition).",
     )
     ap.add_argument("--samples", type=int, default=128, help="Cycles samples (default: 128).")
     ap.add_argument("--device", default="GPU", choices=["GPU", "CPU"],
@@ -50,7 +56,7 @@ def main() -> None:
     args = ap.parse_args()
 
     run_render(
-        EXP,
+        f"exp05",
         scenes=args.scenes,
         samples=args.samples,
         device=args.device,
