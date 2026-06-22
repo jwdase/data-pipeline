@@ -14,3 +14,4 @@ wheels/
 # (data/README.md and any other tracked top-level files under data/ are kept.)
 /data/*/
 *.zip
+/stage

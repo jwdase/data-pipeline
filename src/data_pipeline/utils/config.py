@@ -20,7 +20,7 @@ from pathlib import Path
 
 from scene_physics.configs.camera import CameraIntrinsics, camera_from_dict
 
-from data_pipeline.paths import config_path
+from data_pipeline.utils.paths import config_path
 
 __all__ = ["ExperimentConfig", "load_experiment_config"]
 

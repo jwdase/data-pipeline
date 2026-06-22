@@ -22,8 +22,8 @@ from __future__ import annotations
 import json
 import os
 
-from data_pipeline.config import load_experiment_config
-from data_pipeline.paths import data_dir
+from data_pipeline.utils.config import load_experiment_config
+from data_pipeline.utils.paths import data_dir
 
 __all__ = ["scene_args"]
 

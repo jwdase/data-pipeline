@@ -43,8 +43,8 @@ from pxr import Gf, Usd, UsdGeom
 from scene_physics.configs.camera import CameraIntrinsics
 from scene_physics.visualization.blender.material_specs import DEFAULT, MATERIAL_SPECS
 
-from data_pipeline.config import load_experiment_config
-from data_pipeline.render import scene_dirs
+from data_pipeline.utils.config import load_experiment_config
+from data_pipeline.render.render import scene_dirs
 
 __all__ = [
     "spec_for",

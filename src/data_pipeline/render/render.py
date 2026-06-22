@@ -29,8 +29,8 @@ from pathlib import Path
 from pxr import Usd, UsdPhysics
 from scene_physics.visualization.render_pipeline import DEFAULT_HDRI, render_scene
 
-from data_pipeline.config import load_experiment_config
-from data_pipeline.paths import data_dir
+from data_pipeline.utils.config import load_experiment_config
+from data_pipeline.utils.paths import data_dir
 
 __all__ = ["scene_dirs", "run_render"]
 
