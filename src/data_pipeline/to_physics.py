@@ -3,14 +3,14 @@ Author physics-enabled USDs from the hand-authored Blender scenes in manual/.
 
 Blender's USD export writes plain Mesh prims with no UsdPhysics schemas, so
 newton.ModelBuilder.add_usd imports zero bodies/shapes and the sim/render comes up empty
-(see eval/exp05/run_sim.py). This reads each mesh's local geometry + world pose out of a
+(see eval/data-set/run_sim.py). This reads each mesh's local geometry + world pose out of a
 manual USD and re-authors it through scene_physics.data_gen.usd_export.write_layout_usd --
 the same function scene_gen uses for the dataset -- tagging the table as a static collider
 and every other object as a dynamic rigid body.
 
-Output is written to data/exp05/<scene>/data/<scene>_physics.usdc -- the nested, lowercase
-per-scene layout the rest of exp05 (run_sim/render/inference/gen_truth) discovers via
-scene*/data/*_physics.usdc, not flat in data/exp05/. The "_physics.usdc" suffix is load-
+Output is written to data/data-set/<scene>/data/<scene>_physics.usdc -- the nested, lowercase
+per-scene layout the rest of data-set (run_sim/render/inference/gen_truth) discovers via
+scene*/data/*_physics.usdc, not flat in data/data-set/. The "_physics.usdc" suffix is load-
 bearing: run_simulation's table-collider/makeup logic keys off it, and with no makeup.json
 sibling it falls back to scene_gen's default table, which is correct for these scenes.
 """
@@ -23,11 +23,6 @@ from pxr import Usd, UsdGeom, Gf
 
 from scene_physics.data_gen.scene_gen import GRAVITY, MU, RESTITUTION, TABLE
 from scene_physics.data_gen.usd_export import UsdBody, write_layout_usd
-
-ROOT = Path(__file__).resolve().parents[2]
-MANUAL = ROOT / "manual"
-OUT_DIR = ROOT / "data" / "exp05"
-
 
 def _triangulate(indices, counts):
     """Fan-triangulate a face-vertex stream into a flat (3*T,) triangle index array.
@@ -82,11 +77,14 @@ def _body_from_mesh(prim, xform_cache):
     )
 
 
-def convert(scene_path, out_dir=OUT_DIR):
-    """Convert one manual Scene*.usdc into its physics USD; returns the output path.
+def convert(scene_path, out_path):
+    """Author the physics USD for one manual scene at an explicit output path.
 
-    Output goes to <out_dir>/<scene>/data/<scene>_physics.usdc -- the nested, lowercase
-    per-scene layout the rest of exp05 discovers, not flat in <out_dir>."""
+    `scene_path` is the manual Scene*.usdc to read; `out_path` is the exact
+    *_physics.usdc file to write. The caller owns the on-disk layout (e.g.
+    data-set's <scene>/data/<scene>_physics.usdc); convert just writes there.
+    Both args accept str or pathlib.Path. Returns the output Path."""
+    scene_path, out_path = Path(scene_path), Path(out_path)
     stage = Usd.Stage.Open(str(scene_path))
     xform_cache = UsdGeom.XformCache(Usd.TimeCode.Default())
     bodies = [
@@ -95,28 +93,16 @@ def convert(scene_path, out_dir=OUT_DIR):
         if p.GetTypeName() == "Mesh"
     ]
 
-    scene = scene_path.stem.lower()
-    data_dir = out_dir / scene / "data"
-    data_dir.mkdir(parents=True, exist_ok=True)
-    out = data_dir / f"{scene}_physics.usdc"
-    out.unlink(missing_ok=True)  # write_layout_usd uses Usd.Stage.CreateNew, which won't overwrite
-    write_layout_usd(str(out), bodies, gravity=abs(GRAVITY), friction=MU, restitution=RESTITUTION)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.unlink(missing_ok=True)  # write_layout_usd uses Usd.Stage.CreateNew, which won't overwrite
+    write_layout_usd(str(out_path), bodies, gravity=abs(GRAVITY), friction=MU, restitution=RESTITUTION)
 
     n_static = sum(b.is_static for b in bodies)
-    print(f"{scene_path.name}: {len(bodies)} bodies ({n_static} static) -> {out.relative_to(ROOT)}")
-    return out
+    print(f"{scene_path.name}: {len(bodies)} bodies ({n_static} static) -> {out_path}")
+    return out_path
 
 
 if __name__ == "__main__":
     # Manual Blender exports are nested one per scene at manual/<Scene>/data/<Scene>.usdc
     # (not flat in manual/), so key each by its folder; stray flat re-exports are ignored.
-    scenes = {
-        p.parent.parent.name.lower(): p
-        for p in sorted(MANUAL.glob("[Ss]cene*/data/[Ss]cene*.usdc"))
-    }
-    ap = argparse.ArgumentParser(description="Author physics USDs from manual Blender scenes")
-    ap.add_argument("--scene", default="all", choices=["all", *sorted(scenes)])
-    args = ap.parse_args()
-
-    for name in sorted(scenes) if args.scene == "all" else [args.scene]:
-        convert(scenes[name])
+    pass

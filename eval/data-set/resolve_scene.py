@@ -1,7 +1,7 @@
-"""End-to-end "resolve color" pipeline for an exp05 scene.
+"""End-to-end "resolve color" pipeline for an data-set scene.
 
 Packages the by-hand sequence we ran to fix a raw Blender export dropped into
-exp05 into one command, per scene:
+data-set into one command, per scene:
 
   1. to_physics : raw export (no UsdPhysics schemas; cameras/lights; meshes nested
                   /root/root/<base>/<base>_NNN) -> proper physics USD
@@ -17,12 +17,12 @@ exp05 into one command, per scene:
 
 INPUT CONTRACT: drop the raw, non-physics export at
 
-    data/exp05/<scene>/data/<scene>.usdc
+    data/data-set/<scene>/data/<scene>.usdc
 
 then run::
 
-    uv run eval/exp05/resolve_scene.py scene033 scene034     # convert + truth + render
-    uv run eval/exp05/resolve_scene.py scene033 --no-render  # data only (fast, no GPU)
+    uv run eval/data-set/resolve_scene.py scene033 scene034     # convert + truth + render
+    uv run eval/data-set/resolve_scene.py scene033 --no-render  # data only (fast, no GPU)
 
 A raw export mistakenly saved into the *_physics.usdc slot is still handled: it is
 backed up to <scene>_physics.usdc.rawbak, promoted to <scene>.usdc, and converted.
@@ -46,7 +46,7 @@ from gen_truth import build_truth  # noqa: E402
 from data_pipeline.render import run_render  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
-EXP_DIR = ROOT / "data" / "exp05"
+EXP_DIR = ROOT / "data" / "data-set"
 
 
 def _has_rigid_bodies(usd_path: Path) -> bool:
@@ -118,15 +118,15 @@ def resolve(scene: str, *, render: bool, samples: int, device: str) -> bool:
     _gen_truth(scene, phys)
     if render:
         print(f"[{scene}] 3/4 render: rendering ...")
-        run_render("exp05", [scene], samples=samples, device=device)
+        run_render("data-set", [scene], samples=samples, device=device)
     else:
         print(f"[{scene}] 3/4 render: skipped (--no-render)")
     return _verify(scene, render)
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(description="Convert + truth + render an exp05 scene from its raw USD.")
-    ap.add_argument("scenes", nargs="+", help="scene names, e.g. scene033 (raw input at data/exp05/<scene>/data/<scene>.usdc)")
+    ap = argparse.ArgumentParser(description="Convert + truth + render an data-set scene from its raw USD.")
+    ap.add_argument("scenes", nargs="+", help="scene names, e.g. scene033 (raw input at data/data-set/<scene>/data/<scene>.usdc)")
     ap.add_argument("--no-render", action="store_true", help="run to_physics + gen_truth only (no GPU/Blender)")
     ap.add_argument("--samples", type=int, default=128, help="Cycles samples (default: 128)")
     ap.add_argument("--device", default="GPU", choices=["GPU", "CPU"], help="render device (default: GPU)")

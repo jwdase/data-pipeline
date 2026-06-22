@@ -1,6 +1,6 @@
 {
-    "experiment": "exp04",
-    "description": "exp04 scenes, rendered and evaluated from exp01's camera p01_f03 (eye-level front, 34 deg FOV) — the same view used for exp01/exp02/exp03.",
+    "experiment": "data-set",
+    "description": "data-set scenes, rendered and evaluated from exp01's camera p01_f03 (eye-level front, 34 deg FOV) — the same view used for exp01/exp02/exp03.",
     "camera": {
         "id": "p01_f03",
         "position": {

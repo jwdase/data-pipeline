@@ -41,7 +41,7 @@ def _has_rigid_bodies(usd_path: Path) -> bool:
     schemas: render_scene still loads the geometry, but the segmentation ID pass
     matches nothing (its objects sit a prim deeper than ``truth.json``'s names) and
     the mask comes up blank. The name-based glob can't tell the two apart — only the
-    schemas can — so re-author with ``eval/exp05/to_physics.py``."""
+    schemas can — so re-author with ``eval/data-set/to_physics.py``."""
     stage = Usd.Stage.Open(str(usd_path))
     return any(p.HasAPI(UsdPhysics.RigidBodyAPI) for p in stage.Traverse())
 

@@ -1,6 +1,6 @@
-"""Author the missing <Scene>_truth.json beside each exp05 physics USD.
+"""Author the missing <Scene>_truth.json beside each data-set physics USD.
 
-The exp05 scenes are hand-authored (manual/ -> to_physics.py) and ship with only a
+The data-set scenes are hand-authored (manual/ -> to_physics.py) and ship with only a
 *_physics.usdc -- no *_truth.json. data_pipeline.run_render needs one: render_scene calls
 scene_physics...render_pipeline.scene_names, which reads the keys of data/*_truth.json to
 learn which prims to segment. Without it the render aborts with StopIteration.
@@ -8,14 +8,14 @@ learn which prims to segment. Without it the render aborts with StopIteration.
 This reads the same physics USD render imports, takes every object Xform under /root
 (skipping PhysicsScene + the physics Materials), and writes name -> world pose
 [x, y, z, qx, qy, qz, qw] -- the schema scene_gen's truth.json uses (and the same
-T+R decomposition as eval/exp05/to_physics.py). Because the names come straight from the
+T+R decomposition as eval/data-set/to_physics.py). Because the names come straight from the
 USD render loads, the truth keys line up exactly with the prims Blender segments.
 
 Idempotent and backwards compatible: existing experiments already have their truth.json,
 and this only writes the file when it's absent (use --force to overwrite).
 
-    uv run python eval/exp05/gen_truth.py            # all exp05 scenes missing truth.json
-    uv run python eval/exp05/gen_truth.py --force    # rewrite every truth.json
+    uv run python eval/data-set/gen_truth.py            # all data-set scenes missing truth.json
+    uv run python eval/data-set/gen_truth.py --force    # rewrite every truth.json
 """
 
 import argparse
@@ -23,9 +23,6 @@ import json
 from pathlib import Path
 
 from pxr import Usd, UsdGeom, Gf
-
-ROOT = Path(__file__).resolve().parents[2]
-EXP_DIR = ROOT / "data" / "exp05"
 
 # /root children that are scene scaffolding, not segmentable objects.
 _SKIP_TYPES = {"PhysicsScene", "Material", "Scope"}
@@ -51,25 +48,15 @@ def build_truth(usd_path):
         truth[prim.GetName()] = _world_pose(prim, xform_cache)
     return truth
 
+def build_save_truth(usd_path):
+    """Write <scene>_truth.json next to the physics USD; returns the truth path."""
+    usd_path = Path(usd_path)
+    result = build_truth(usd_path)
 
-def main():
-    ap = argparse.ArgumentParser(description="Write <Scene>_truth.json for exp05 scenes.")
-    ap.add_argument("--force", action="store_true", help="overwrite existing truth.json")
-    args = ap.parse_args()
-
-    usds = sorted(EXP_DIR.glob("scene*/data/*_physics.usdc"))
-    if not usds:
-        ap.error(f"no */data/*_physics.usdc under {EXP_DIR}")
-
-    for usd in usds:
-        out = usd.with_name(usd.name.replace("_physics.usdc", "_truth.json"))
-        # if out.exists() and not args.force:
-        #    print(f"[skip] {out.relative_to(ROOT)} (exists)")
-        #    continue
-        truth = build_truth(usd)
-        out.write_text(json.dumps(truth, indent=4))
-        print(f"[done] {out.relative_to(ROOT)} ({len(truth)} objects: {', '.join(truth)})")
+    target = usd_path.with_name(usd_path.name.replace("_physics.usdc", "_truth.json"))
+    target.write_text(json.dumps(result, indent=4))
+    return target
 
 
 if __name__ == "__main__":
-    main()
+    pass
