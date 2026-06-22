@@ -43,7 +43,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from to_physics import convert as to_physics_convert  # noqa: E402
 from gen_truth import build_truth  # noqa: E402
 
-from data_pipeline.render import run_render  # noqa: E402
+from data_pipeline.render.render import run_render  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 EXP_DIR = ROOT / "data" / "data-set"
