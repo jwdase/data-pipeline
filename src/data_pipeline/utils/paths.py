@@ -10,9 +10,9 @@ folder across four top-level trees, plus one config file::
 
 All paths are resolved relative to the project root, so a generation script
 writes to the same ``data/<exp>/`` no matter which directory it is launched
-from. The root is the repo checkout (three parents up from this file, since it
-lives at ``src/data_pipeline/paths.py``); set ``DATA_PIPELINE_ROOT`` to override
-(e.g. when the package is installed non-editably).
+from. The root is the repo checkout (four parents up from this file, since it
+lives at ``src/data_pipeline/utils/paths.py``); set ``DATA_PIPELINE_ROOT`` to
+override (e.g. when the package is installed non-editably).
 """
 
 from __future__ import annotations
@@ -34,7 +34,8 @@ def project_root() -> Path:
     env = os.environ.get("DATA_PIPELINE_ROOT")
     if env:
         return Path(env).resolve()
-    return Path(__file__).resolve().parents[2]
+    # This file lives at src/data_pipeline/utils/paths.py — repo root is 4 up.
+    return Path(__file__).resolve().parents[3]
 
 
 def config_path(exp: str) -> Path:

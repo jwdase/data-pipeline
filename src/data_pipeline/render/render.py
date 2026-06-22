@@ -1,6 +1,6 @@
 """Render runner — the thin bridge from an experiment to Scene-Physics' renderer.
 
-The mirror image of :func:`data_pipeline.runner.run_datagen`: an ``eval/<exp>/``
+The mirror image of :func:`data_pipeline.bulk_scene.run_datagen`: an ``eval/<exp>/``
 script only says *which* scenes to render; this module resolves the experiment's
 camera from ``config/<exp>.json``, finds the generated scenes under
 ``data/<exp>/``, and calls Scene-Physics'

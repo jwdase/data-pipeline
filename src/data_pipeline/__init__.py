@@ -12,9 +12,15 @@ per-experiment folder layout. Typical use from a ``data_gen/<exp>/`` script::
 """
 
 from data_pipeline.utils.config import ExperimentConfig, load_experiment_config
-from data_pipeline.runner import run_datagen
+from data_pipeline.bulk_scene import run_datagen
 from data_pipeline.render import run_render, run_render_targets
 from data_pipeline.utils import paths
+
+# inference / simulation are per-scene CLI workers (``python -m
+# data_pipeline.inference``); they are intentionally NOT imported here, so the
+# package init doesn't pull them into sys.modules ahead of ``-m`` execution
+# (which would trigger a runpy double-import RuntimeWarning). Import their
+# functions directly: ``from data_pipeline.inference import run_inference``.
 
 __all__ = [
     "ExperimentConfig",
