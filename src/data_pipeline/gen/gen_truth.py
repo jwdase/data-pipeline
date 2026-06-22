@@ -18,7 +18,6 @@ and this only writes the file when it's absent (use --force to overwrite).
     uv run python eval/data-set/gen_truth.py --force    # rewrite every truth.json
 """
 
-import argparse
 import json
 from pathlib import Path
 

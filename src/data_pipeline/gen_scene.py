@@ -69,16 +69,19 @@ if __name__ == "__main__":
     )
 
     ap.add_argument(
-        "--origin", help="Specify the scene you would like converted"
+        "--origin", help="Specify the scene you would like converted",
+        required=True
     )
     ap.add_argument(
-        "--exp", help="Specify the output experiment run you want file in"
+        "--exp", help="Specify the output experiment run you want file in",
+        required=True
     )
     ap.add_argument(
-        "--scene", help="Specify the target scene you want this to be called?"
+        "--scene", help="Specify the target scene you want this to be called?",
+        required=True
     )
     ap.add_argument(
-        "--device", default="GPU", help="Specify the device to run this on GPU vs CPU",
+        "--device", default="CPU", help="Specify the device to run this on GPU vs CPU",
         choices=["CPU", "GPU"]
     )
 

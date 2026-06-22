@@ -74,6 +74,7 @@ def make_prior_and_makeup(root, scene, scene_comp, truths):
     for scene_obj in scene_comp["objects"]:
         if scene_obj["visible_fraction"] < lowest_occlusion:
             lowest_occlusion_obj = scene_obj["name"]
+            lowest_occlusion = scene_obj["visible_fraction"]
         if scene_obj["visible_fraction"] < THRESHOLD:
             options.append((scene_obj["name"], scene_obj["visible_fraction"]))
 
@@ -164,8 +165,10 @@ def get_occluded_target(options, lowest):
                     response_2 = int(input("Verify: "))
                 except ValueError:
                     response_2 = None
+            else:
+                response_2 = None
 
-            if response and response == response_2:
+            if (response == 0 or response) and response == response_2:
                 answer = response
             else:
                 print("Please enter the correct option")
@@ -176,13 +179,4 @@ def get_occluded_target(options, lowest):
        return lowest
     
 if __name__ == "__main__":
-    root = "data-set"
-    scene = "scene050"
-
-    with open("data/data-set/scene050/results/target.json", "r") as f:
-        scene_comp = json.load(f)
-
-    with open("data/data-set/scene050/data/scene050_truth.json", "r") as f:
-        truths = json.load(f)
-
-    make_prior_and_makeup(root, scene, scene_comp, truths)
+    pass

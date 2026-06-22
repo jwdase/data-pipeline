@@ -15,7 +15,6 @@ bearing: run_simulation's table-collider/makeup logic keys off it, and with no m
 sibling it falls back to scene_gen's default table, which is correct for these scenes.
 """
 
-import argparse
 from pathlib import Path
 
 import numpy as np

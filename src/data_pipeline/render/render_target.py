@@ -232,7 +232,9 @@ def render_target(
     own resolution, so it overlays ``render.png`` exactly. ``out_dir`` redirects the
     PNG/JSON (default: the scene's ``results/``)."""
     scene_dir = Path(scene_dir)
-    usd = next(scene_dir.glob("data/*_physics.usdc"))
+    usd = next(scene_dir.glob("data/*_physics.usdc"), None)
+    if usd is None:
+        raise FileNotFoundError(f"{scene_dir.name}: no data/*_physics.usdc")
     results = scene_dir / "results"
     seg_path = results / "segmentation.png"
     labels_path = results / "segmentation_labels.json"
