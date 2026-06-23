@@ -102,10 +102,17 @@ def _parse_args(argv=None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(
         description="Run Scene-Physics importance sampling on one data/<exp>/<scene>.",
     )
-    ap.add_argument("--exp", help="experiment id, e.g. exp01 (config/<exp>.json must exist)")
-    ap.add_argument("--scene", help="scene name, e.g. scene001")
     ap.add_argument(
-        "--iterations", "-n", type=int, default=None,
+        "--exp", help="experiment id, e.g. exp01 (config/<exp>.json must exist)",
+        required=True
+        )
+    
+    ap.add_argument(
+        "--scene", help="scene name, e.g. scene001",
+        required=True
+        )
+    ap.add_argument(
+        "--iterations", "-n", type=int, default=50,
         help="Gibbs iterations (default: $NUM_EPOCHS, else 50)",
     )
     return ap.parse_args(argv)
